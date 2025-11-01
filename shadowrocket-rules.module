@@ -9,7 +9,7 @@ include = 无
 # === 涨乐全球通（华泰证券）===
 DOMAIN-SUFFIX,htsc.com,DIRECT
 DOMAIN-SUFFIX,htscimg.cn,DIRECT
-DOMAIN-SUFFIX,htscsec.com,DIRECT
+DOMAIN-SUFFIX,htscsec.com,DIRECT  
 DOMAIN-SUFFIX,hstong.com,DIRECT
 DOMAIN-SUFFIX,hstongapp.com,DIRECT  
 DOMAIN-SUFFIX,hsmartsight.com,DIRECT
@@ -32,7 +32,6 @@ DOMAIN-SUFFIX,bin.bnbstatic.com,DIRECT
 DOMAIN-SUFFIX,www.okx.com,DIRECT
 DOMAIN-SUFFIX,okx.com.cdn.cloudflare.net,DIRECT
 IP-CIDR,13.248.135.87/32,DIRECT,no-resolve
-
 
 # === 小红书全域代理（防止暴露中国IP）===
 DOMAIN-SUFFIX,xiaohongshu.com,PROXY
@@ -86,7 +85,7 @@ DOMAIN-SUFFIX,amazonaws.com,DIRECT
 DOMAIN-SUFFIX,hsbc.com.hk,DIRECT
 DOMAIN-SUFFIX,www.hsbc.com.hk,DIRECT
 DOMAIN-SUFFIX,insurance.hsbc.com.hk,DIRECT
-DOMAIN-SUFFIX,cdntm.hsbc.com.hk,DIRECT
+DOMAIN-SUFFIX,cdntm.hsbc.com.hk,DIRECT  
 DOMAIN-SUFFIX,m.mobilex-static.hsbc.com.hk,DIRECT
 DOMAIN-SUFFIX,rbwm-api.hsbc.com.hk,DIRECT
 DOMAIN-SUFFIX,mobile.hsbc.com.hk,DIRECT
@@ -111,9 +110,6 @@ DOMAIN-SUFFIX,m.hotmail.com,DIRECT 
 
 # === Chat服务 ===
 DOMAIN-SUFFIX,chat.deepseek.com,DIRECT
-
-# === 广告拦截规则 ===
-RULE-SET,https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list,REJECT
 
 # === 其他明确走 PROXY 的域名 ===
 DOMAIN-SUFFIX,fengkongcloud.com,PROXY              
