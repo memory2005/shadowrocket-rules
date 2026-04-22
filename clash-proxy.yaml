@@ -1,0 +1,398 @@
+# ==============================================================
+# 这是Clash Verge配置文件，核心原则：仅做功能增量，不做逻辑重构。 如果你发现我的配置有"过期"或"次优"的地方：不要直接改在我的代码里。请在回复的代码块下方，单独开辟一个 [💡 专业建议] 区域。在这个区域里，用简洁的语言告诉我："我注意到你的 XXX 规则可能过时了，更好的方案是 XXX，这样做的好处是 XXX。"
+# 基础设置
+# ==============================================================
+mode: rule
+mixed-port: 7890
+allow-lan: true
+log-level: info
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+external-controller: 127.0.0.1:9090
+secret: "set-your-secret"
+
+dns:
+  enable: true
+  listen: "0.0.0.0:53"
+  enhanced-mode: "fake-ip"
+  fake-ip-range: "198.18.0.1/16"
+  fake-ip-filter-mode: "blacklist"
+  prefer-h3: false
+  respect-rules: true # 建议设为 true，让规则控制解析逻辑
+  use-hosts: true
+  use-system-hosts: true
+  ipv6: false
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "*.arpa"
+    - "time.*.com"
+    - "ntp.*.com"
+    - "+.market.xiaomi.com"
+    - "localhost.ptlogin2.qq.com"
+    - "*.msftncsi.com"
+    - "www.msftconnecttest.com"
+  default-nameserver:
+    - "223.5.5.5"
+    - "119.29.29.29"
+  nameserver:
+    - "223.5.5.5" # 物理距离最近，放在最首位
+    - "https://dns.alicdn.com/dns-query"
+    - "https://doh.pub/dns-query"
+  fallback:
+    - "https://dns.google/dns-query"
+    - "tls://8.8.8.8"
+  fallback-filter:
+    geoip: true
+    geoip-code: "CN"
+    ipcidr:
+      - "240.0.0.0/4"
+
+  # [优化] 精准分流解析，降低延迟
+  nameserver-policy:
+    "geosite:cn": [223.5.5.5, 119.29.29.29]
+    "geosite:category-ads-all": "127.0.0.1"
+    "+.apple.com": [223.5.5.5, 119.29.29.29]
+    "+.microsoft.com": [223.5.5.5, 119.29.29.29]
+
+  # 必须添加以下部分，不能留空
+  proxy-server-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - https://dns.alicdn.com/dns-query
+
+# ==============================================================
+# [proxies] 节点配置
+# ==============================================================
+proxies:
+  - name: "Google-VLESS"
+    type: vless
+    server: 35.212.175.64
+    port: 443
+    uuid: 7949a8e1-b8b1-401e-a6ff-9cc7c8e4ca05
+    network: tcp
+    tls: true
+    udp: true
+    flow: xtls-rprx-vision
+    servername: www.microsoft.com
+    reality-opts:
+      public-key: G5o5mIpoXWB2e3rhUPovV3a-ULnRtYa7kIyp2Su142Y
+      short-id: 2a8bf954
+    client-fingerprint: chrome
+
+  - name: "Google-all"
+    type: vless
+    server: 35.212.214.178
+    port: 443
+    uuid: 7949a8e1-b8b1-401e-a6ff-9cc7c8e4ca05
+    network: tcp
+    tls: true
+    udp: true
+    flow: xtls-rprx-vision
+    servername: www.microsoft.com
+    reality-opts:
+      public-key: G5o5mIpoXWB2e3rhUPovV3a-ULnRtYa7kIyp2Su142Y
+      short-id: 2a8bf954
+    client-fingerprint: chrome
+  # --- CF 备用集群  ---
+  - {name: CF官方优选, server: 108.162.198.45, port: 2053, type: vless, uuid: 99724a7b-97fd-47d7-9101-50668ff15efc, tls: true, skip-cert-verify: true, servername: veb.235321.xyz, network: ws, ws-opts: {path: /, headers: {Host: veb.235321.xyz}}}
+  - {name: CF官方优选 2, server: 8.39.125.200, port: 2083, type: vless, uuid: 99724a7b-97fd-47d7-9101-50668ff15efc, tls: true, skip-cert-verify: true, servername: veb.235321.xyz, network: ws, ws-opts: {path: /, headers: {Host: veb.235321.xyz}}}
+  - {name: CF官方优选 3, server: 162.159.153.248, port: 443, type: vless, uuid: 99724a7b-97fd-47d7-9101-50668ff15efc, tls: true, skip-cert-verify: true, servername: veb.235321.xyz, network: ws, ws-opts: {path: /, headers: {Host: veb.235321.xyz}}}
+  - {name: CF官方优选 4, server: 198.41.223.33, port: 2083, type: vless, uuid: 99724a7b-97fd-47d7-9101-50668ff15efc, tls: true, skip-cert-verify: true, servername: veb.235321.xyz, network: ws, ws-opts: {path: /, headers: {Host: veb.235321.xyz}}}
+  - {name: CF官方优选 5, server: 104.18.40.81, port: 2096, type: vless, uuid: 99724a7b-97fd-47d7-9101-50668ff15efc, tls: true, skip-cert-verify: true, servername: veb.235321.xyz, network: ws, ws-opts: {path: /, headers: {Host: veb.235321.xyz}}}
+  - {name: CF官方优选 6, server: 104.26.3.193, port: 2083, type: vless, uuid: 99724a7b-97fd-47d7-9101-50668ff15efc, tls: true, skip-cert-verify: true, servername: veb.235321.xyz, network: ws, ws-opts: {path: /, headers: {Host: veb.235321.xyz}}}
+  - {name: CF官方优选 7, server: 104.19.43.22, port: 8443, type: vless, uuid: 99724a7b-97fd-47d7-9101-50668ff15efc, tls: true, skip-cert-verify: true, servername: veb.235321.xyz, network: ws, ws-opts: {path: /, headers: {Host: veb.235321.xyz}}}
+  - {name: CF官方优选 8, server: 172.67.79.67, port: 443, type: vless, uuid: 99724a7b-97fd-47d7-9101-50668ff15efc, tls: true, skip-cert-verify: true, servername: veb.235321.xyz, network: ws, ws-opts: {path: /, headers: {Host: veb.235321.xyz}}}
+
+
+# ==============================================================
+# [proxy-groups] 策略组
+# ==============================================================
+proxy-groups:
+  - name: 🚀 代理选择
+    type: select
+    proxies:
+      - ♻️ 自动选择
+      - Google-all
+      - Google-VLESS
+
+  - name: ♻️ 自动选择
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    proxies:
+      - Google-all
+      - Google-VLESS
+
+  - name: CF自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    proxies:
+      - CF官方优选
+      - CF官方优选 2
+      - CF官方优选 3
+      - CF官方优选 4
+      - CF官方优选 5
+      - CF官方优选 6
+      - CF官方优选 7
+      - CF官方优选 8
+
+  - name: 🚀 节点选择
+    type: select
+    proxies:
+      - 🚀 代理选择
+      - ♻️ 自动选择
+      - Google-all
+      - Google-VLESS
+      - DIRECT
+
+  - name: 🎯 全球直连
+    type: select
+    proxies:
+      - DIRECT
+      - 🚀 代理选择
+
+  - name: 🛑 广告拦截
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+
+  - name: Ⓜ️ 微软服务
+    type: select
+    proxies:
+      - DIRECT
+      - 🚀 代理选择
+      - ♻️ 自动选择
+      - Google-all
+      - Google-VLESS
+
+  - name: 🍎 苹果服务
+    type: select
+    proxies:
+      - DIRECT
+      - 🚀 代理选择
+      - ♻️ 自动选择
+      - Google-all
+      - Google-VLESS
+
+  - name: 📲 电报消息
+    type: select
+    proxies:
+      - 🚀 代理选择
+      - Google-all
+      - Google-VLESS
+      - ♻️ 自动选择
+
+  - name: 💬 Ai平台
+    type: select
+    proxies:
+      - 🚀 代理选择
+      - Google-all
+      - Google-VLESS
+      - ♻️ 自动选择
+
+  - name: 📹 视频媒体
+    type: select
+    proxies:
+      - CF自动
+      - 🚀 代理选择
+      - ♻️ 自动选择
+      - Google-all
+      - Google-VLESS
+
+  - name: 🐟 proxy
+    type: select
+    proxies:
+      - 🚀 代理选择
+      - Google-all
+      - Google-VLESS
+      - DIRECT
+
+# ==============================================================
+# [rules] 分流规则 (请保持我的 rules 章节中以注释横线分隔的块状结构。如果我要增加新公司或新服务，请为其独立创建一个新的注释块，严禁将不同性质的域名混在一起。参考已有的规则做示例：)
+# ==============================================================
+rules:
+  - GEOSITE,google,🚀 代理选择
+
+  # 1. 核心节点直连 (防止循环解析)
+  - IP-CIDR,35.212.175.64/32,DIRECT,no-resolve
+  - IP-CIDR,35.212.214.178/32,DIRECT,no-resolve
+  - PROCESS-NAME,Clash Verge.exe,DIRECT
+  - PROCESS-NAME,clash-win64.exe,DIRECT
+  - DOMAIN-KEYWORD,tailscale,DIRECT
+  - PROCESS-NAME,tailscaled.exe,DIRECT
+
+  # ------------------------------------------------------------
+  # 【专项拦截】字节跳动追踪探针 (不影响视频播放的安全版)
+  # ------------------------------------------------------------
+  - DOMAIN-SUFFIX,msmp.abchina.com.cn,🛑 广告拦截
+  - DOMAIN-SUFFIX,log.snssdk.com,🛑 广告拦截
+  - DOMAIN-SUFFIX,rtlog.snssdk.com,🛑 广告拦截
+  - DOMAIN-SUFFIX,toblog.snssdk.com,🛑 广告拦截
+  - DOMAIN-SUFFIX,log.amemv.com,🛑 广告拦截
+  - DOMAIN-SUFFIX,mon.snssdk.com,🛑 广告拦截
+  - DOMAIN-SUFFIX,ad.toutiao.com,🛑 广告拦截
+  - DOMAIN-SUFFIX,dsp.toutiao.com,🛑 广告拦截
+  - DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,🛑 广告拦截
+  - DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com,🛑 广告拦截
+  - DOMAIN-SUFFIX,pglstatp-toutiao.com,🛑 广告拦截
+
+  # 2. 局域网与本地直连
+  - DOMAIN-SUFFIX,local,DIRECT
+  - DOMAIN-SUFFIX,localhost,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  - IP-CIDR6,::1/128,DIRECT,no-resolve
+  - IP-CIDR6,fc00::/7,DIRECT,no-resolve
+  - IP-CIDR6,fe80::/10,DIRECT,no-resolve
+
+  # 3. 国内公共 DNS（强制直连）
+
+  # 域名规则 (DOMAIN)
+  - DOMAIN,alidns.com,DIRECT
+  - DOMAIN,doh.pub,DIRECT
+  - DOMAIN,dot.pub,DIRECT
+  - DOMAIN,360.cn,DIRECT
+  - DOMAIN,onedns.net,DIRECT
+
+  # IPv4 规则 (IP-CIDR)
+  - IP-CIDR,223.5.5.5/32,DIRECT,no-resolve
+  - IP-CIDR,223.6.6.6/32,DIRECT,no-resolve
+  - IP-CIDR,119.29.29.29/32,DIRECT,no-resolve
+  - IP-CIDR,1.12.12.12/32,DIRECT,no-resolve
+  - IP-CIDR,120.53.53.53/32,DIRECT,no-resolve
+  - IP-CIDR,180.76.76.76/32,DIRECT,no-resolve
+  - IP-CIDR,114.114.114.114/32,DIRECT,no-resolve
+  - IP-CIDR,114.114.115.115/32,DIRECT,no-resolve
+  - IP-CIDR,114.114.114.119/32,DIRECT,no-resolve
+  - IP-CIDR,114.114.115.119/32,DIRECT,no-resolve
+  - IP-CIDR,114.114.114.110/32,DIRECT,no-resolve
+  - IP-CIDR,114.114.115.110/32,DIRECT,no-resolve
+  - IP-CIDR,180.184.1.1/32,DIRECT,no-resolve
+  - IP-CIDR,180.184.2.2/32,DIRECT,no-resolve
+  - IP-CIDR,101.226.4.6/32,DIRECT,no-resolve
+  - IP-CIDR,218.30.118.6/32,DIRECT,no-resolve
+  - IP-CIDR,123.125.81.6/32,DIRECT,no-resolve
+  - IP-CIDR,140.207.198.6/32,DIRECT,no-resolve
+  - IP-CIDR,1.2.4.8/32,DIRECT,no-resolve
+  - IP-CIDR,210.2.4.8/32,DIRECT,no-resolve
+  - IP-CIDR,52.80.66.66/32,DIRECT,no-resolve
+  - IP-CIDR,117.50.22.22/32,DIRECT,no-resolve
+  - IP-CIDR,117.50.10.10/32,DIRECT,no-resolve
+  - IP-CIDR,52.80.52.52/32,DIRECT,no-resolve
+  - IP-CIDR,117.50.60.30/32,DIRECT,no-resolve
+  - IP-CIDR,52.80.60.30/32,DIRECT,no-resolve
+
+  # IPv6 规则 (IP-CIDR6)
+  - IP-CIDR,2400:3200::1/128,DIRECT,no-resolve
+  - IP-CIDR,2400:3200:baba::1/128,DIRECT,no-resolve
+  - IP-CIDR,2402:4e00::/128,DIRECT,no-resolve
+  - IP-CIDR,2402:4e00:1::/128,DIRECT,no-resolve
+  - IP-CIDR,2400:da00::6666/128,DIRECT,no-resolve
+  - IP-CIDR,2400:7fc0:849e:200::4/128,DIRECT,no-resolve
+  - IP-CIDR,2404:c2c0:85d8:901::4/128,DIRECT,no-resolve
+  - IP-CIDR,2400:7fc0:849e:200::8/128,DIRECT,no-resolve
+  - IP-CIDR,2404:c2c0:85d8:901::8/128,DIRECT,no-resolve
+
+  # ------------------------------------------------------------
+  # 【专项代理】国内版抖音 (伪装海外 IP 属地专用)
+  # ------------------------------------------------------------
+  - DOMAIN-SUFFIX,amemv.com,🚀 代理选择
+  - DOMAIN-SUFFIX,douyin.com,🚀 代理选择
+  - DOMAIN-SUFFIX,aweme.snssdk.com,🚀 代理选择
+  - DOMAIN-KEYWORD,core-c-lq,🚀 代理选择
+
+  # ------------------------------------------------------------
+  # 【专项优化】香港及国际金融、券商直连
+  # ------------------------------------------------------------
+  # 【金融服务】华泰国际 (涨乐全球通 / Huatai)
+  - DOMAIN-SUFFIX,htsc.com,🎯 全球直连
+  - DOMAIN-SUFFIX,htscimg.cn,🎯 全球直连
+  - DOMAIN-SUFFIX,htscsec.com,🎯 全球直连
+  - DOMAIN-SUFFIX,hstong.com,🎯 全球直连
+  - DOMAIN-SUFFIX,hstongapp.com,🎯 全球直连
+  - DOMAIN-SUFFIX,hsmartsight.com,🎯 全球直连
+
+  # 【金融服务】富途证券 (Futu / Moomoo)
+  - DOMAIN-SUFFIX,www.futuie.com,🎯 全球直连
+  - DOMAIN-SUFFIX,futu5.com,🎯 全球直连
+  - DOMAIN-SUFFIX,futu.com,🎯 全球直连
+  - DOMAIN-SUFFIX,futunnquote.com,🎯 全球直连
+  - DOMAIN-SUFFIX,futupay.com,🎯 全球直连
+  - DOMAIN-SUFFIX,collect.futuhn.com,🎯 全球直连
+  - DOMAIN-SUFFIX,moomoo.com,🎯 全球直连
+
+  # 长桥证券 (Longbridge)
+  - DOMAIN-KEYWORD,longbridge,🎯 全球直连
+  - DOMAIN-SUFFIX,longportapp.com,🎯 全球直连
+
+  # 众安银行 (ZA Bank)
+  - DOMAIN-SUFFIX,za.group,🎯 全球直连
+
+  # 中银香港 (BOCHK)
+  - DOMAIN-SUFFIX,bochk.com,🎯 全球直连
+
+  # 汇丰银行 (HSBC / PayMe)
+  - DOMAIN-KEYWORD,hsbc,🎯 全球直连
+  - DOMAIN-SUFFIX,hsbc.com,🎯 全球直连
+  - DOMAIN-SUFFIX,hsbc.com.hk,🎯 全球直连
+
+  # 其他通用香港金融规则
+  - DOMAIN-SUFFIX,hk,🎯 全球直连
+  - DOMAIN-SUFFIX,com.hk,🎯 全球直连
+  - DOMAIN-KEYWORD,hkex,🎯 全球直连
+  - DOMAIN-KEYWORD,hkg,🎯 全球直连
+
+  # ------------------------------------------------------------
+  # 3. 专项服务分流 (走代理)
+  # ------------------------------------------------------------
+
+
+  # AI 平台
+  - DOMAIN-KEYWORD,openai,💬 Ai平台
+  - DOMAIN-KEYWORD,anthropic,💬 Ai平台
+  - DOMAIN-KEYWORD,claude,💬 Ai平台
+  - DOMAIN-SUFFIX,chatgpt.com,💬 Ai平台
+  - DOMAIN-SUFFIX,oaistatic.com,💬 Ai平台
+  - DOMAIN-SUFFIX,oaiusercontent.com,💬 Ai平台
+  - DOMAIN-SUFFIX,perplexity.ai,💬 Ai平台
+  - DOMAIN,gemini.google.com,💬 Ai平台
+  - DOMAIN-SUFFIX,poe.com,💬 Ai平台
+  - DOMAIN-SUFFIX,x.ai,💬 Ai平台
+  - DOMAIN-SUFFIX,meta.ai,💬 Ai平台
+  - DOMAIN-SUFFIX,midjourney.com,💬 Ai平台
+  - DOMAIN-SUFFIX,cursor.com,💬 Ai平台
+  - DOMAIN-SUFFIX,cursor.sh,💬 Ai平台
+
+  # 电报消息
+  - DOMAIN-SUFFIX,t.me,📲 电报消息
+  - DOMAIN-SUFFIX,telegram.org,📲 电报消息
+  - IP-CIDR,91.108.0.0/16,📲 电报消息,no-resolve
+
+  # 视频媒体
+  - DOMAIN-KEYWORD,youtube,📹 视频媒体
+  - DOMAIN-SUFFIX,googlevideo.com,📹 视频媒体
+  - DOMAIN-SUFFIX,reddit.com,📹 视频媒体
+
+  # 微软/苹果云服务
+
+
+  - PROCESS-NAME,OneDrive.exe,Ⓜ️ 微软服务
+
+  - DOMAIN-SUFFIX,icloud.com,🍎 苹果服务
+
+  # ------------------------------------------------------------
+  # 4. 基础兜底（CN 流量直连 ）
+  # ------------------------------------------------------------
+  - GEOSITE,CN,🎯 全球直连
+  - GEOIP,CN,🎯 全球直连,no-resolve
+
+  # 5. 最终规则
+  - MATCH,🐟 proxy
